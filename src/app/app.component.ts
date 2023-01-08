@@ -14,6 +14,8 @@ export class AppComponent implements OnInit {
   modalVersion: boolean;
   modalPwaEvent: any;
   modalPwaPlatform: string|undefined;
+  battery: any;
+  batteryLog: string[] = [];
 
   constructor(private platform: Platform,
               private swUpdate: SwUpdate) {
@@ -22,10 +24,62 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.updateOnlineStatus();
+    this._initUpdateOnlineStatus();
+    this._initBattery();
+    this._initModalPwa();
+  }
 
-    window.addEventListener('online',  this.updateOnlineStatus.bind(this));
-    window.addEventListener('offline', this.updateOnlineStatus.bind(this));
+  updateVersion(): void {
+    this.modalVersion = false;
+    window.location.reload();
+  }
+
+  closeVersion(): void {
+    this.modalVersion = false;
+  }
+
+  addToHomeScreen(): void {
+    this.modalPwaEvent.prompt();
+    this.modalPwaPlatform = undefined;
+  }
+
+  closePwa(): void {
+    this.modalPwaPlatform = undefined;
+  }
+
+  private _initBattery(): void {
+    (navigator as any)?.getBattery()?.then((battery: any) => {
+      this.battery = battery;
+      battery.addEventListener('chargingchange', this._updateBatteryChargeInfo.bind(this));
+      battery.addEventListener('levelchange', this._updateBatteryLevelInfo.bind(this));
+      battery.addEventListener('chargingtimechange', this._updateBatteryChargingInfo.bind(this));
+      battery.addEventListener('dischargingtimechange', this._updateBatteryDischargingInfo.bind(this));
+
+      this._updateBatteryChargeInfo();
+      this._updateBatteryLevelInfo();
+      this._updateBatteryChargingInfo();
+      this._updateBatteryDischargingInfo();
+    })
+  }
+  private _updateBatteryChargeInfo(): void {
+    this.batteryLog.push('Battery charging?  ' + (this.battery.charging ? 'Yes' : 'No'));
+  }
+  private _updateBatteryLevelInfo(): void {
+    this.batteryLog.push('Battery level: ' + (this.battery.level * 100) + '%');
+  }
+  private _updateBatteryChargingInfo(): void {
+    this.batteryLog.push('Battery charging time: ' + this.battery.chargingTime + ' seconds');
+  }
+  private _updateBatteryDischargingInfo(): void {
+    this.batteryLog.push('Battery discharging time: ' + this.battery.dischargingTime + ' seconds');
+  }
+
+
+  private _initUpdateOnlineStatus(): void {
+    this._updateOnlineStatus();
+
+    window.addEventListener('online',  this._updateOnlineStatus.bind(this));
+    window.addEventListener('offline', this._updateOnlineStatus.bind(this));
 
     if (this.swUpdate.isEnabled) {
       this.swUpdate.versionUpdates.pipe(
@@ -36,25 +90,14 @@ export class AppComponent implements OnInit {
         }),
       );
     }
-
-    this.loadModalPwa();
   }
 
-  private updateOnlineStatus(): void {
+  private _updateOnlineStatus(): void {
     this.isOnline = window.navigator.onLine;
     console.info(`isOnline=[${this.isOnline}]`);
   }
 
-  public updateVersion(): void {
-    this.modalVersion = false;
-    window.location.reload();
-  }
-
-  public closeVersion(): void {
-    this.modalVersion = false;
-  }
-
-  private loadModalPwa(): void {
+  private _initModalPwa(): void {
     if (this.platform.ANDROID) {
       window.addEventListener('beforeinstallprompt', (event: any) => {
         event.preventDefault();
@@ -70,14 +113,4 @@ export class AppComponent implements OnInit {
       }
     }
   }
-
-  public addToHomeScreen(): void {
-    this.modalPwaEvent.prompt();
-    this.modalPwaPlatform = undefined;
-  }
-
-  public closePwa(): void {
-    this.modalPwaPlatform = undefined;
-  }
-
 }
