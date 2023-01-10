@@ -71,10 +71,11 @@ export class AppComponent implements OnInit {
   private _initBattery(): void {
     (navigator as any)?.getBattery()?.then((battery: any) => {
       this.battery = battery;
-      battery.addEventListener('chargingchange', this._batteryStatusMessage.bind(this));
-      battery.addEventListener('levelchange', this._batteryStatusMessage.bind(this));
-      battery.addEventListener('chargingtimechange', this._batteryStatusMessage.bind(this));
-      battery.addEventListener('dischargingtimechange', this._batteryStatusMessage.bind(this));
+      ['chargingchange', 'levelchange', 'chargingtimechange', 'dischargingtimechange'].forEach((t: string) => {
+        battery.addEventListener(t, (event: any) => {
+          this._batteryStatusMessage(t);
+        });
+      });
 
       this._batteryStatusMessage('init');
     })
