@@ -12,6 +12,8 @@
   </div>
 </div>
 
+{{authState.device$ | async | json}}
+
 <dl *ngFor="let info of batteryLog">
   <dt>Source</dt>
   <dd><code>{{info.source | json}}</code></dd>

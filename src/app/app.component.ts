@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Platform } from '@angular/cdk/platform';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, map } from 'rxjs/operators';
+import {AuthState} from "./@state/auth.state";
+
 
 export type TBatteryInfo = {
   source: string,
@@ -27,8 +29,12 @@ export class AppComponent implements OnInit {
   batteryLog: TBatteryInfo[] = [];
   machineId?: string | null;
 
-  constructor(private platform: Platform,
-              private swUpdate: SwUpdate) {
+
+  constructor(
+    private platform: Platform,
+    private swUpdate: SwUpdate,
+    public authState: AuthState
+  ) {
     this.isOnline = false;
     this.modalVersion = false;
     this._getMachineId();
@@ -66,6 +72,8 @@ export class AppComponent implements OnInit {
       this.machineId = crypto.randomUUID();
       localStorage.setItem('MachineId', this.machineId);
     }
+
+    this.authState.init(this.machineId);
   }
 
   private _initBattery(): void {

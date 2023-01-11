@@ -4,6 +4,16 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
+import * as localForage from 'localforage';
+
+localForage.config({
+  driver: localForage.INDEXEDDB,
+  name: 'myApp',
+  version: 1.0,
+  storeName: 'auth',
+});
+
+
 @NgModule({
   declarations: [
     AppComponent
