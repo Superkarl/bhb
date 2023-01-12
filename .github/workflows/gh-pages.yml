@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - 1-finalize-github-actions
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,7 +24,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Init new repo in dist folder and commit generated files
+      - name: Prepare push to gh-pages
         run: |
           cd dist/bhb
           git init
@@ -36,30 +34,10 @@ jobs:
           git config --local user.name "GitHub Action"
           git commit -m 'update gh-pages'
 
-      - name: Force push to destination branch
+      - name: Force push to gh-pages
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.github_token }}
           branch: gh-pages
           force: true
           directory: ./dist/bhb
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
-          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-#      - name: Install dependencies
-#        run: npm install
-
-#      - name: Run tests
-#        run: npm run test:headless
-
-#      - name: Build
-#        run: npm run build
-
-#      - name: Deploy
-#        if: success()
-#        uses: peaceiris/actions-gh-pages@v3
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          publish_dir: ./dist/bhb
-#          enable_jekyll: true
-
