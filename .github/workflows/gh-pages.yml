@@ -25,7 +25,7 @@ jobs:
         run: npm run build
 
       - name: Deploy
-        run: bin/update-gh-pages.sh
+        run: ./bin/update-gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
           DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
