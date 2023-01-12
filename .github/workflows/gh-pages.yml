@@ -24,12 +24,22 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Deploy
-        run: ./bin/update-gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
-          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+      - name: Init new repo in dist folder and commit generated files
+        run: |
+          cd dist/bhb
+          git init
+          git add -A
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m 'update gh-pages'
 
+      - name: Force push to destination branch
+        uses: ad-m/github-push-action@v0.5.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          force: true
+          directory: ./dist/bhb
 
 #      - name: Install dependencies
 #        run: npm install
