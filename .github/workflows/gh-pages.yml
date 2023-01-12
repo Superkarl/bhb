@@ -28,6 +28,7 @@ jobs:
         run: |
           cd dist/bhb
           git init
+          git config --global --add safe.directory /github/workspace/dist/bhb
           git add -A
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
