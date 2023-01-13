@@ -2,6 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { Platform } from '@angular/cdk/platform';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, map } from 'rxjs/operators';
+import {AuthState} from "./@state/auth.state";
+
+
+export type TBatteryInfo = {
+  source: string,
+  machineId: string,
+  charging: boolean,
+  level: number,
+  chargingTime: number,
+  dischargingTime: number
+};
 
 @Component({
   selector: 'app-root',
@@ -15,12 +26,18 @@ export class AppComponent implements OnInit {
   modalPwaEvent: any;
   modalPwaPlatform: string|undefined;
   battery: any;
-  batteryLog: string[] = [];
+  batteryLog: TBatteryInfo[] = [];
+  machineId?: string | null;
 
-  constructor(private platform: Platform,
-              private swUpdate: SwUpdate) {
+
+  constructor(
+    private platform: Platform,
+    private swUpdate: SwUpdate,
+    public authState: AuthState
+  ) {
     this.isOnline = false;
     this.modalVersion = false;
+    this._getMachineId();
   }
 
   public ngOnInit(): void {
@@ -47,33 +64,40 @@ export class AppComponent implements OnInit {
     this.modalPwaPlatform = undefined;
   }
 
+  private _getMachineId() {
+
+    this.machineId = localStorage.getItem('MachineId');
+
+    if (!this.machineId) {
+      this.machineId = crypto.randomUUID();
+      localStorage.setItem('MachineId', this.machineId);
+    }
+
+    this.authState.init(this.machineId);
+  }
+
   private _initBattery(): void {
     (navigator as any)?.getBattery()?.then((battery: any) => {
       this.battery = battery;
-      battery.addEventListener('chargingchange', this._updateBatteryChargeInfo.bind(this));
-      battery.addEventListener('levelchange', this._updateBatteryLevelInfo.bind(this));
-      battery.addEventListener('chargingtimechange', this._updateBatteryChargingInfo.bind(this));
-      battery.addEventListener('dischargingtimechange', this._updateBatteryDischargingInfo.bind(this));
+      ['chargingchange', 'levelchange', 'chargingtimechange', 'dischargingtimechange'].forEach((t: string) => {
+        battery.addEventListener(t, (event: any) => {
+          this._batteryStatusMessage(t);
+        });
+      });
 
-      this._updateBatteryChargeInfo();
-      this._updateBatteryLevelInfo();
-      this._updateBatteryChargingInfo();
-      this._updateBatteryDischargingInfo();
+      this._batteryStatusMessage('init');
     })
   }
-  private _updateBatteryChargeInfo(): void {
-    this.batteryLog.push('Battery charging?  ' + (this.battery.charging ? 'Yes' : 'No'));
+  private _batteryStatusMessage(source: string): void {
+    this.batteryLog.push({
+      source,
+      machineId: this.machineId as string,
+      charging: this.battery.charging,
+      level: this.battery.level,
+      chargingTime: this.battery.chargingTime,
+      dischargingTime: this.battery.dischargingTime
+    });
   }
-  private _updateBatteryLevelInfo(): void {
-    this.batteryLog.push('Battery level: ' + (this.battery.level * 100) + '%');
-  }
-  private _updateBatteryChargingInfo(): void {
-    this.batteryLog.push('Battery charging time: ' + this.battery.chargingTime + ' seconds');
-  }
-  private _updateBatteryDischargingInfo(): void {
-    this.batteryLog.push('Battery discharging time: ' + this.battery.dischargingTime + ' seconds');
-  }
-
 
   private _initUpdateOnlineStatus(): void {
     this._updateOnlineStatus();

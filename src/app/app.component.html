@@ -12,12 +12,22 @@
   </div>
 </div>
 
-<blockquote>
-  <ng-container *ngFor="let info of batteryLog">
-    <code>{{info}}</code>
-    <hr>
-  </ng-container>
-</blockquote>
+{{authState.device$ | async | json}}
+
+<dl *ngFor="let info of batteryLog">
+  <dt>Source</dt>
+  <dd><code>{{info.source | json}}</code></dd>
+  <dt>machineId</dt>
+  <dd><code>{{info.machineId | json}}</code></dd>
+  <dt>Battery charging?</dt>
+  <dd><code>{{info.charging}}</code></dd>
+  <dt>Battery level</dt>
+  <dd><code>{{info.level * 100}}%</code></dd>
+  <dt>Battery charging time</dt>
+  <dd><code>{{info.chargingTime}}sec</code></dd>
+  <dt>Battery discharging time</dt>
+  <dd><code>{{info.dischargingTime}}sec</code></dd>
+</dl>
 
 <div class="w-100 position-absolute top-0" *ngIf="modalVersion">
   <div class="alert alert-secondary m-2">
