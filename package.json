@@ -8,8 +8,7 @@
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "predeploy": "ng build --configuration production --base-href=/angular-pwa/",
-    "deploy": "npx gh-pages -d dist/angular-pwa"
+    "predeploy": "ng -- build --output-path docs --base-href /bhb"
   },
   "private": true,
   "dependencies": {
