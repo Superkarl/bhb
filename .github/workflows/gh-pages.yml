@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build --output-path docs --base-href /bhb/
+        run: npm run build --output-path docs --base-href "/bhb/"
 
       - name: Prepare push to gh-pages
         run: |
