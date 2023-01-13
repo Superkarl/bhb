@@ -8,7 +8,7 @@
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "predeploy": "ng build --configuration production --output-path dist/bhb --base-href /bhb"
+    "predeploy": "ng build --configuration production --output-path dist/bhb --base-href /bhb --deploy-url /bhb/"
   },
   "private": true,
   "dependencies": {
