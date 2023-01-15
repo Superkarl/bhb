@@ -122,6 +122,17 @@ export class AppComponent implements OnInit {
   }
 
   private _initModalPwa(): void {
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates.pipe(
+        filter((evt: any): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+        map((evt: any) => {
+          console.info(`currentVersion=[${evt.currentVersion} | latestVersion=[${evt.latestVersion}]`);
+          this.modalVersion = true;
+        }),
+      );
+    }
+
+
     if (this.platform.ANDROID) {
       window.addEventListener('beforeinstallprompt', (event: any) => {
         event.preventDefault();
