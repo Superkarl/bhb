@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, isDevMode, OnInit} from '@angular/core';
 import { Platform } from '@angular/cdk/platform';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, map } from 'rxjs/operators';
