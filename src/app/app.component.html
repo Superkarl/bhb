@@ -14,6 +14,12 @@
 
 {{authState.device$ | async | json}}
 
+---
+<blockquote>
+  {{jens?.join('|')}}
+</blockquote>
+---
+
 <dl *ngFor="let info of batteryLog">
   <dt>Source</dt>
   <dd><code>{{info.source | json}}</code></dd>
