@@ -3,6 +3,7 @@ import { Platform } from '@angular/cdk/platform';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, map } from 'rxjs/operators';
 import {AuthState} from "./@state/auth.state";
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 
 export type TBatteryInfo = {
@@ -33,7 +34,8 @@ export class AppComponent implements OnInit {
   constructor(
     private platform: Platform,
     private swUpdate: SwUpdate,
-    public authState: AuthState
+    public authState: AuthState,
+    private geolocation: Geolocation
   ) {
     this.isOnline = false;
     this.modalVersion = false;
@@ -44,6 +46,8 @@ export class AppComponent implements OnInit {
     this._initUpdateOnlineStatus();
     this._initBattery();
     this._initModalPwa();
+
+    this._getLocation();
   }
 
   updateVersion(): void {
@@ -147,5 +151,32 @@ export class AppComponent implements OnInit {
         this.modalPwaPlatform = 'IOS';
       }
     }
+  }
+
+  private _getLocation() {
+    this.geolocation.getCurrentPosition({enableHighAccuracy: true}).then((resp) => {
+
+      const jens = [
+        resp.coords.accuracy,
+        resp.coords.altitude,
+        resp.coords.altitudeAccuracy,
+        resp.coords.heading,
+        resp.coords.latitude,
+        resp.coords.longitude,
+        resp.coords.speed,
+        resp.timestamp
+      ];
+
+
+      const objectSizeInBytes = JSON.stringify(jens);
+
+
+      console.table(jens);
+      console.log(objectSizeInBytes?.length);
+      console.log('Latitude: ' + jens[4]);
+      console.log('Longitude: ' + jens[5]);
+    }).catch((error) => {
+      console.log('Error getting location', error);
+    });
   }
 }

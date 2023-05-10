@@ -4,6 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+
 import * as localForage from 'localforage';
 
 localForage.config({
@@ -27,7 +29,9 @@ localForage.config({
       registrationStrategy: 'registerWhenStable:30000'
     })
   ],
-  providers: [],
+  providers: [
+    Geolocation
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
