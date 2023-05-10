@@ -30,6 +30,8 @@ export class AppComponent implements OnInit {
   batteryLog: TBatteryInfo[] = [];
   machineId?: string | null;
 
+  jens: any;
+
 
   constructor(
     private platform: Platform,
@@ -156,7 +158,7 @@ export class AppComponent implements OnInit {
   private _getLocation() {
     this.geolocation.getCurrentPosition({enableHighAccuracy: true}).then((resp) => {
 
-      const jens = [
+      this.jens = [
         resp.coords.accuracy,
         resp.coords.altitude,
         resp.coords.altitudeAccuracy,
@@ -168,13 +170,13 @@ export class AppComponent implements OnInit {
       ];
 
 
-      const objectSizeInBytes = JSON.stringify(jens);
+      const objectSizeInBytes = JSON.stringify(this.jens);
 
 
-      console.table(jens);
+      console.table(this.jens);
       console.log(objectSizeInBytes?.length);
-      console.log('Latitude: ' + jens[4]);
-      console.log('Longitude: ' + jens[5]);
+      console.log('Latitude:' + this.jens[4]);
+      console.log('Longitude: ' + this.jens[5]);
     }).catch((error) => {
       console.log('Error getting location', error);
     });
